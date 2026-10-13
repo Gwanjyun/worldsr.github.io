@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/img/worldsr-logo.svg" alt="WorldSR" width="360">
+</p>
+
 <h1 align="center">WorldSR: Harnessing World Knowledge Search for Grounded Image Super-Resolution</h1>
 
 <p align="center">
