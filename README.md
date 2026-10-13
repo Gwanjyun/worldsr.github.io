@@ -80,7 +80,3 @@ Interactive before/after demos are available on the [project page](https://gwanj
 ## 📮 Contact
 
 For questions, please contact [dengjy27@mail2.sysu.edu.cn](mailto:dengjy27@mail2.sysu.edu.cn).
-
----
-
-<sub>Project page template inspired by [Nerfies](https://github.com/nerfies/nerfies.github.io).</sub>
