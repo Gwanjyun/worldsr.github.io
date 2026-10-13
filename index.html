@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WorldSR: Harnessing World Knowledge Search for Grounded Image Super-Resolution</title>
+
+  <meta name="description" content="WorldSR augments generative-prior super-resolution with explicit, entity-aligned visual world knowledge retrieved from the web, mitigating hallucinations and improving fidelity. NeurIPS 2026.">
+  <meta property="og:title" content="WorldSR: Harnessing World Knowledge Search for Grounded Image Super-Resolution">
+  <meta property="og:description" content="Entity-level grounding in external visual world knowledge — a simple and effective complement to model-bound generative priors for real-world super-resolution.">
+  <meta property="og:image" content="assets/img/teaser.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WorldSR: Harnessing World Knowledge Search for Grounded Image Super-Resolution">
+  <meta name="twitter:description" content="Entity-level grounding in external visual world knowledge for hallucination-mitigated super-resolution. NeurIPS 2026.">
+  <meta name="twitter:image" content="assets/img/teaser.jpg">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ============================= Header ============================= -->
+<header class="hero">
+  <div class="container">
+    <div class="venue-strip">
+      <span class="badge accent"><img class="badge-logo" src="assets/img/neurips-logo.svg" alt="NeurIPS logo"> NeurIPS 2026</span>
+    </div>
+
+    <h1 class="title">WorldSR: Harnessing World Knowledge Search for Grounded Image Super-Resolution</h1>
+
+    <p class="authors">
+      <span class="author"><a href="https://scholar.google.com/citations?user=SsG0abgAAAAJ&amp;hl=en" target="_blank" rel="noopener">Junyuan Deng</a><sup>1</sup></span> &nbsp;
+      <span class="author"><a href="https://scholar.google.com/citations?user=7JvBwK0AAAAJ&amp;hl=en" target="_blank" rel="noopener">Xinyi Wu</a><sup>1</sup></span> &nbsp;
+      <span class="author"><a href="https://scholar.google.com/citations?user=FrRQragAAAAJ&amp;hl=en" target="_blank" rel="noopener">Zhenyao Wu</a><sup>1,<span class="corr">✉</span></sup></span> &nbsp;
+      <span class="author"><a href="https://scholar.google.com/citations?user=eycXl_QAAAAJ&amp;hl=en" target="_blank" rel="noopener">Song Wang</a><sup>1,2</sup></span> &nbsp;
+      <span class="author">Yu Wang<sup>1</sup></span> &nbsp;
+      <span class="author">Congchao Zhu<sup>1</sup></span>
+    </p>
+
+    <p class="affiliations">
+      <sup>1</sup> <a class="affil-link" href="https://www.honor.com/global/" target="_blank" rel="noopener"><img class="affil-logo" src="assets/img/honor-logo-black.svg" alt="Honor logo"> Honor Device Co., Ltd</a> &nbsp;&nbsp;·&nbsp;&nbsp;
+      <sup>2</sup> Shenzhen University of Advanced Technology
+    </p>
+
+    <p class="correspondence"><svg class="mail-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Corresponding author</p>
+
+    <div class="link-buttons">
+      <a class="button" href="#" aria-label="arXiv paper">
+        <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12h8v1.6H8V12zm0 3.2h8v1.6H8v-1.6zM8 18.4h5.4V20H8v-1.6z"/></svg>
+        arXiv <span style="opacity:.6">(Coming Soon)</span>
+      </a>
+      <!-- TODO: replace href with the Hugging Face dataset/collection URL when ready -->
+      <a class="button" href="#" aria-label="Datasets">
+        <img class="hf-logo" src="assets/img/huggingface_logo-noborder.svg" alt="Hugging Face logo">
+        Datasets <span style="opacity:.6">(Coming Soon)</span>
+      </a>
+      <a class="button" href="#applications" aria-label="Applications">
+        <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></svg>
+        Applications
+      </a>
+      <a class="button" href="#bibtex">
+        <svg viewBox="0 0 24 24"><path d="M4 3h13l3 3v15H4V3zm2 2v14h12V7h-3V5H6zm2 4h8v1.6H8V9zm0 3.2h8v1.6H8v-1.6zM8 15.4h5.4V17H8v-1.6z"/></svg>
+        BibTeX
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= Teaser ============================= -->
+<section>
+  <div class="container">
+    <div class="figure-block">
+      <img src="assets/img/teaser.jpg" alt="Teaser figure of WorldSR: real-world entity knowledge search and world-grounded super-resolution" data-lightbox>
+      <p class="figure-caption">
+        <b>WorldSR</b> integrates explicit, entity-aligned visual world knowledge into super-resolution.
+        Entities in the low-resolution input (people, animals, landmarks) are matched to real-world
+        references retrieved from the web, and a world-grounded SR model transfers authentic details
+        into the final result, mitigating hallucinations.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= Abstract ============================= -->
+<section class="alt" id="abstract">
+  <div class="container">
+    <h2 class="section-title">Abstract</h2>
+    <p class="text">
+      Generative-prior-based super-resolution (SR) methods leverage implicit knowledge learned from
+      large-scale models to enhance low-resolution inputs. However, such priors are inherently
+      stochastic and optimized for diverse generation, conflicting with the deterministic,
+      high-fidelity reconstruction required for SR. It is also tied to the base model, costly to
+      update, and prone to hallucinations as real-world data evolves.
+    </p>
+    <p class="text">
+      To address these limitations, we introduce <b>WorldSR</b>, a novel framework that augments SR
+      with explicit, entity-aligned visual world knowledge. WorldSR automatically decomposes the
+      input into semantic entities and performs entity-wise retrieval of structurally and
+      semantically aligned images from a large-scale external corpus. For efficiency and
+      reliability, we incorporate a memory mechanism to reuse previously retrieved results and a
+      multi-step filtering process to refine candidate references. The selected references as world
+      knowledge are then integrated through a novel multi-reference super-resolution model, which
+      provides fine-grained constraints for detail synthesis and structural recovery. Experiments
+      on real-world SR benchmarks show that WorldSR consistently improves structural fidelity and
+      visual quality, outperforming existing generative super-resolution methods. Our results
+      suggest that entity-level grounding in external visual world knowledge provides a simple and
+      effective complement to model-bound generative priors.
+    </p>
+  </div>
+</section>
+
+<!-- ============================= Method ============================= -->
+<section id="method">
+  <div class="container">
+    <h2 class="section-title">Method</h2>
+
+    <div class="figure-block">
+      <img src="assets/img/pipeline.jpg" alt="Overview of the WorldSR pipeline" data-lightbox>
+      <p class="figure-caption">
+        <b>Overview of the WorldSR pipeline.</b> The agent-style framework operates in an iterative
+        refinement loop with five key components: Agentic ROI Planner, Memory Verifier, World
+        Knowledge Searcher, World Knowledge Filter, and the World-Grounded Image Super-Resolution
+        Model.
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h4><span class="num">1</span> Agentic ROI Planner</h4>
+        <p>A MLLM performs entity-level semantic reasoning on the input and produces open-world ROI
+        bounding boxes; corresponding image patches are cropped for downstream retrieval, with an
+        iterative loop feeding intermediate SR results back as visual feedback.</p>
+      </div>
+      <div class="card">
+        <h4><span class="num">2</span> Memory Verifier</h4>
+        <p>A Memory Bank caches previously explored ROIs together with their filtered world
+        knowledge. A Decision-Making Controller routes each query by IoU: memory hits skip
+        redundant search, and all-hit queries terminate the refinement loop.</p>
+      </div>
+      <div class="card">
+        <h4><span class="num">3</span> World Knowledge Searcher</h4>
+        <p>A dual-engine retrieval strategy combines web-scale reverse image search (high-resolution
+        source scraping) with a local knowledge base searched via visual-encoder embeddings and
+        cosine similarity, merging candidates into a unified set.</p>
+      </div>
+      <div class="card">
+        <h4><span class="num">4</span> World Knowledge Filter</h4>
+        <p>Candidates are refined through quality-aware filtering (IQA models), irrelevant region
+        pruning (MLLM grounding), and semantic-aware reference ranking, selecting the optimal
+        reference per entity.</p>
+      </div>
+      <div class="card">
+        <h4><span class="num">5</span> World-Grounded SR Model</h4>
+        <p>Reference Quality Refinement first restores retrieved references; Reference-Guided SR
+        then formulates multi-reference super-resolution as unified sequence modeling over a
+        text-to-image DiT with a dual-LoRA design decoupling LR- and reference-domain tokens.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Training &amp; Inference</h3>
+    <div class="figure-block">
+      <img src="assets/img/train_infer.jpg" alt="World-Grounded Image Super-Resolution model and its training pipeline" data-lightbox>
+      <p class="figure-caption">
+        The world-grounded SR model is built on a pretrained text-to-image DiT backbone
+        (Flux.2-dev) with three LoRA adapters (θ<sub>RQR</sub>, θ<sub>LR</sub>, θ<sub>Ref</sub>)
+        trained via QLoRA. LR tokens and reference tokens are concatenated along the sequence
+        dimension, enabling unconstrained global interactions and faithful knowledge injection.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= Quantitative ============================= -->
+<section class="alt" id="results">
+  <div class="container">
+    <h2 class="section-title">Quantitative Results</h2>
+    <p class="text" style="text-align:center; max-width:860px; margin:0 auto 8px;">
+      Comparison with state-of-the-art methods on RealLQ250, Bird, Face, WRSR, and CUFED5.
+      WorldSR establishes a new state of the art across all no-reference metrics.
+    </p>
+
+    <div class="tabs" id="table-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="tbl-reallq250" role="tab">RealLQ250</button>
+      <button class="tab-btn" data-tab="tbl-bird" role="tab">Bird</button>
+      <button class="tab-btn" data-tab="tbl-face" role="tab">Face</button>
+      <button class="tab-btn" data-tab="tbl-wrsr" role="tab">WRSR</button>
+      <button class="tab-btn" data-tab="tbl-cufed5" role="tab">CUFED5</button>
+    </div>
+
+    <div class="table-wrap">
+      <!-- RealLQ250 -->
+      <div class="tab-panel active" id="tbl-reallq250">
+        <table class="results">
+          <thead>
+            <tr><th>Method</th><th>MUSIQ ↑</th><th>CLIPIQA ↑</th><th>MANIQA ↑</th><th>RALI ↑</th><th>Q-Insight ↑</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Real-ESRGAN</td><td>62.52</td><td>0.5435</td><td>0.3565</td><td>3.6604</td><td>3.7444</td></tr>
+            <tr><td>OSEDiff</td><td>69.16</td><td>0.6649</td><td>0.4089</td><td>3.8456</td><td>3.9584</td></tr>
+            <tr><td>PISA-SR</td><td class="second">70.91</td><td>0.6951</td><td>0.4431</td><td>3.8480</td><td>3.9383</td></tr>
+            <tr><td>HYPIR</td><td>69.75</td><td class="second">0.6978</td><td class="second">0.4561</td><td>3.9048</td><td>3.9783</td></tr>
+            <tr><td>OMGSR</td><td>68.74</td><td>0.6444</td><td>0.4270</td><td class="second">3.9236</td><td class="second">3.9799</td></tr>
+            <tr><td>AgenticIR</td><td>64.36</td><td>0.6185</td><td>0.3956</td><td>3.6879</td><td>3.7559</td></tr>
+            <tr class="ours"><td>WorldSR (Ours)</td><td class="best">73.32</td><td class="best">0.7649</td><td class="best">0.5954</td><td class="best">3.9940</td><td class="best">4.0270</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bird -->
+      <div class="tab-panel" id="tbl-bird">
+        <table class="results">
+          <thead>
+            <tr><th>Method</th><th>MUSIQ ↑</th><th>CLIPIQA ↑</th><th>MANIQA ↑</th><th>RALI ↑</th><th>Q-Insight ↑</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Real-ESRGAN</td><td>29.03</td><td>0.3600</td><td>0.2797</td><td>1.9279</td><td>1.9670</td></tr>
+            <tr><td>OSEDiff</td><td>74.30</td><td>0.8391</td><td>0.4891</td><td>4.0416</td><td>3.9048</td></tr>
+            <tr><td>PISA-SR</td><td>74.37</td><td>0.8369</td><td>0.5322</td><td>3.9564</td><td>3.9221</td></tr>
+            <tr><td>HYPIR</td><td>74.86</td><td>0.8462</td><td>0.5386</td><td>4.0398</td><td>4.0072</td></tr>
+            <tr><td>OMGSR</td><td>74.10</td><td>0.7887</td><td>0.4831</td><td>3.9483</td><td>3.9524</td></tr>
+            <tr><td>AgenticIR</td><td>26.21</td><td>0.2226</td><td>0.1395</td><td>1.9104</td><td>1.7159</td></tr>
+            <tr><td>SeeSR+ReFIR</td><td class="second">76.18</td><td class="best">0.8850</td><td class="second">0.6131</td><td class="second">4.1608</td><td class="second">4.1264</td></tr>
+            <tr><td>Ada-RefSR</td><td>72.23</td><td>0.8330</td><td>0.4489</td><td>3.8462</td><td>3.8361</td></tr>
+            <tr class="ours"><td>WorldSR (Ours)</td><td class="best">77.12</td><td class="second">0.8822</td><td class="best">0.6785</td><td class="best">4.2081</td><td class="best">4.1659</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Face -->
+      <div class="tab-panel" id="tbl-face">
+        <table class="results">
+          <thead>
+            <tr><th>Method</th><th>MUSIQ ↑</th><th>CLIPIQA ↑</th><th>MANIQA ↑</th><th>RALI ↑</th><th>Q-Insight ↑</th><th>IDS ↑</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Real-ESRGAN</td><td>26.34</td><td>0.3665</td><td>0.2971</td><td>1.9702</td><td>2.0762</td><td>0.6904</td></tr>
+            <tr><td>OSEDiff</td><td>71.85</td><td>0.6399</td><td>0.5110</td><td>4.0838</td><td>3.8975</td><td>0.5518</td></tr>
+            <tr><td>PISA-SR</td><td>76.00</td><td class="second">0.7178</td><td>0.5901</td><td>4.1090</td><td>4.0493</td><td>0.6605</td></tr>
+            <tr><td>HYPIR</td><td class="second">76.14</td><td>0.7165</td><td>0.6091</td><td>4.0294</td><td>4.0181</td><td>0.6467</td></tr>
+            <tr><td>OMGSR</td><td>70.55</td><td>0.5907</td><td>0.4793</td><td>3.8515</td><td>3.8466</td><td>0.7094</td></tr>
+            <tr><td>AgenticIR</td><td>25.81</td><td>0.2378</td><td>0.1485</td><td>1.9610</td><td>1.8070</td><td>0.6723</td></tr>
+            <tr><td>SeeSR+ReFIR</td><td>75.43</td><td>0.7115</td><td class="second">0.6175</td><td class="second">4.1100</td><td class="second">4.0765</td><td>0.6175</td></tr>
+            <tr><td>Ref-LDM</td><td>73.77</td><td>0.6637</td><td>0.5252</td><td>3.9690</td><td>3.9554</td><td>0.6790</td></tr>
+            <tr><td>InstantRestore</td><td>69.74</td><td>0.5691</td><td>0.4748</td><td>3.8179</td><td>3.8841</td><td class="second">0.7705</td></tr>
+            <tr><td>Ada-RefSR</td><td>74.45</td><td>0.6381</td><td>0.5215</td><td>4.0267</td><td>3.8969</td><td>0.7364</td></tr>
+            <tr class="ours"><td>WorldSR (Ours)</td><td class="best">77.57</td><td class="best">0.8089</td><td class="best">0.7517</td><td class="best">4.2522</td><td class="best">4.1917</td><td class="best">0.8199</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- WRSR -->
+      <div class="tab-panel" id="tbl-wrsr">
+        <table class="results">
+          <thead>
+            <tr><th>Method</th><th>MUSIQ ↑</th><th>CLIPIQA ↑</th><th>MANIQA ↑</th><th>RALI ↑</th><th>Q-Insight ↑</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Real-ESRGAN</td><td>64.72</td><td>0.6006</td><td>0.3994</td><td>3.5315</td><td>3.6321</td></tr>
+            <tr><td>OSEDiff</td><td>70.31</td><td>0.6559</td><td>0.4323</td><td>3.8766</td><td>3.9146</td></tr>
+            <tr><td>PISA-SR</td><td>69.55</td><td>0.6386</td><td>0.4326</td><td>3.7831</td><td>3.8176</td></tr>
+            <tr><td>HYPIR</td><td>72.02</td><td class="second">0.7288</td><td class="second">0.5050</td><td>3.9533</td><td class="second">4.0453</td></tr>
+            <tr><td>OMGSR</td><td>69.87</td><td>0.6571</td><td>0.4669</td><td>3.9042</td><td>3.9989</td></tr>
+            <tr><td>AgenticIR</td><td>58.07</td><td>0.6077</td><td>0.3890</td><td>3.3047</td><td>3.3771</td></tr>
+            <tr><td>SeeSR+ReFIR</td><td class="second">72.37</td><td>0.7124</td><td>0.5029</td><td class="second">4.0277</td><td>4.0291</td></tr>
+            <tr><td>Ada-RefSR</td><td>70.13</td><td>0.6602</td><td>0.4187</td><td>3.8534</td><td>3.9038</td></tr>
+            <tr class="ours"><td>WorldSR (Ours)</td><td class="best">74.57</td><td class="best">0.7761</td><td class="best">0.6244</td><td class="best">4.1676</td><td class="best">4.1302</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CUFED5 -->
+      <div class="tab-panel" id="tbl-cufed5">
+        <table class="results">
+          <thead>
+            <tr><th>Method</th><th>MUSIQ ↑</th><th>CLIPIQA ↑</th><th>MANIQA ↑</th><th>RALI ↑</th><th>Q-Insight ↑</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Real-ESRGAN</td><td>64.72</td><td>0.4238</td><td>0.3636</td><td>2.9274</td><td>3.1440</td></tr>
+            <tr><td>OSEDiff</td><td>63.24</td><td>0.4899</td><td>0.3629</td><td>3.2859</td><td>3.2802</td></tr>
+            <tr><td>PISA-SR</td><td>64.27</td><td>0.5003</td><td>0.3828</td><td>3.3195</td><td>3.3583</td></tr>
+            <tr><td>HYPIR</td><td>68.27</td><td class="second">0.5758</td><td>0.4580</td><td>3.4699</td><td>3.6293</td></tr>
+            <tr><td>OMGSR</td><td>65.16</td><td>0.5417</td><td>0.4504</td><td>3.4593</td><td>3.5837</td></tr>
+            <tr><td>AgenticIR</td><td>61.24</td><td>0.5172</td><td>0.3550</td><td>3.0420</td><td>3.0846</td></tr>
+            <tr><td>SeeSR+ReFIR</td><td class="second">70.47</td><td>0.5503</td><td class="second">0.4714</td><td class="second">3.7514</td><td class="second">3.7375</td></tr>
+            <tr><td>Ada-RefSR</td><td>66.23</td><td>0.5219</td><td>0.3484</td><td>3.2536</td><td>3.3032</td></tr>
+            <tr class="ours"><td>WorldSR (Ours)</td><td class="best">72.52</td><td class="best">0.6846</td><td class="best">0.6198</td><td class="best">3.8854</td><td class="best">3.8196</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="legend">
+      <span class="best">Red</span> / <span class="second">blue</span>: best / second-best
+      performance. WorldSR surpasses the second-best face-specific approach by
+      <b>+6.4%</b> IDS on the Face dataset, and is the best performer across all no-reference
+      metrics on CUFED5.
+    </p>
+  </div>
+</section>
+
+<!-- ============================= Qualitative ============================= -->
+<section id="qualitative">
+  <div class="container">
+    <h2 class="section-title">Qualitative Results</h2>
+
+    <div class="figure-block">
+      <img src="assets/img/visual.jpg" alt="Qualitative comparison on RealLQ250, Face, Bird, WRSR and CUFED5" data-lightbox>
+      <p class="figure-caption">
+        Qualitative comparison on RealLQ250, Face, Bird, WRSR, and CUFED5. WorldSR effectively
+        transfers world knowledge from retrieved references into the final SR results, yielding
+        clearly better real-world realism and visual quality than no-reference and
+        reference-based competitors.
+      </p>
+    </div>
+
+    <h3 class="sub-title">More Visual Comparisons</h3>
+    <p class="text" style="text-align:center;">
+      Click a dataset, then use the <b>‹</b> / <b>›</b> arrows to browse results.
+      <i>Click any figure to enlarge.</i>
+    </p>
+
+    <div class="tabs" id="gallery-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="gal-reallq250" role="tab">RealLQ250</button>
+      <button class="tab-btn" data-tab="gal-bird" role="tab">Bird</button>
+      <button class="tab-btn" data-tab="gal-face" role="tab">Face</button>
+      <button class="tab-btn" data-tab="gal-wrsr" role="tab">WRSR</button>
+      <button class="tab-btn" data-tab="gal-cufed5" role="tab">CUFED5</button>
+    </div>
+
+    <div class="tab-panel active" id="gal-reallq250">
+      <div class="carousel">
+        <button class="car-btn prev" type="button" aria-label="Previous result"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <figure class="gallery-item active"><img src="assets/img/gallery_RealLQ250_1.jpg" alt="Comparison on RealLQ250 case 1" data-lightbox loading="lazy"></figure>
+        <figure class="gallery-item"><img src="assets/img/gallery_RealLQ250_2.jpg" alt="Comparison on RealLQ250 case 2" data-lightbox loading="lazy"></figure>
+        <button class="car-btn next" type="button" aria-label="Next result"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+      <p class="car-counter">Case <b>1</b> / 2</p>
+    </div>
+    <div class="tab-panel" id="gal-bird">
+      <div class="carousel">
+        <button class="car-btn prev" type="button" aria-label="Previous result"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <figure class="gallery-item active"><img src="assets/img/gallery_Bird_1.jpg" alt="Comparison on Bird case 1" data-lightbox loading="lazy"></figure>
+        <figure class="gallery-item"><img src="assets/img/gallery_Bird_2.jpg" alt="Comparison on Bird case 2" data-lightbox loading="lazy"></figure>
+        <button class="car-btn next" type="button" aria-label="Next result"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+      <p class="car-counter">Case <b>1</b> / 2</p>
+    </div>
+    <div class="tab-panel" id="gal-face">
+      <div class="carousel">
+        <button class="car-btn prev" type="button" aria-label="Previous result"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <figure class="gallery-item active"><img src="assets/img/gallery_Face_1.jpg" alt="Comparison on Face case 1" data-lightbox loading="lazy"></figure>
+        <figure class="gallery-item"><img src="assets/img/gallery_Face_2.jpg" alt="Comparison on Face case 2" data-lightbox loading="lazy"></figure>
+        <button class="car-btn next" type="button" aria-label="Next result"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+      <p class="car-counter">Case <b>1</b> / 2</p>
+    </div>
+    <div class="tab-panel" id="gal-wrsr">
+      <div class="carousel">
+        <button class="car-btn prev" type="button" aria-label="Previous result"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <figure class="gallery-item active"><img src="assets/img/gallery_WRSR_1.jpg" alt="Comparison on WRSR case 1" data-lightbox loading="lazy"></figure>
+        <figure class="gallery-item"><img src="assets/img/gallery_WRSR_2.jpg" alt="Comparison on WRSR case 2" data-lightbox loading="lazy"></figure>
+        <button class="car-btn next" type="button" aria-label="Next result"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+      <p class="car-counter">Case <b>1</b> / 2</p>
+    </div>
+    <div class="tab-panel" id="gal-cufed5">
+      <div class="carousel">
+        <button class="car-btn prev" type="button" aria-label="Previous result"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <figure class="gallery-item active"><img src="assets/img/gallery_CUFED5_1.jpg" alt="Comparison on CUFED5 case 1" data-lightbox loading="lazy"></figure>
+        <figure class="gallery-item"><img src="assets/img/gallery_CUFED5_2.jpg" alt="Comparison on CUFED5 case 2" data-lightbox loading="lazy"></figure>
+        <button class="car-btn next" type="button" aria-label="Next result"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+      <p class="car-counter">Case <b>1</b> / 2</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= Applications ============================= -->
+<section class="alt" id="applications">
+  <div class="container">
+    <h2 class="section-title">Applications</h2>
+    <p class="text" style="text-align:center; margin-bottom: 24px;">
+      Beyond benchmarks, WorldSR plugs into real-world applications: for each degraded input, a
+      sharp reference is retrieved via entity-level search, and the world-grounded SR model
+      restores it. <i>Inside a comparison: scroll to zoom, drag to pan, drag the round handle to
+      wipe. Click any other image to enlarge.</i>
+    </p>
+
+    <div class="tabs" id="apps-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="app-telephoto" role="tab">100× Telephoto</button>
+      <button class="tab-btn" data-tab="app-idphoto" role="tab">ID Photo</button>
+      <button class="tab-btn" data-tab="app-aigc" role="tab">AIGC Repair</button>
+      <button class="tab-btn" data-tab="app-3dgs" role="tab">3DGS Refine</button>
+      <button class="tab-btn" data-tab="app-videosr" role="tab">VideoSR</button>
+    </div>
+
+    <!-- 100x Telephoto -->
+    <div class="tab-panel active app-card" id="app-telephoto">
+      <h4>Smartphone 100× Telephoto Restoration</h4>
+      <p class="desc">A 100× telephoto shot taken by a smartphone is severely blurred. WorldSR restores it with a DSLR-quality photo of the same poster retrieved by entity-level search. <i>Drag the slider to compare.</i></p>
+      <div class="app-carousel">
+        <div class="app-slide active">
+          <div class="ba-row">
+            <div class="ba-slider" style="--pos: 50%; aspect-ratio: 1 / 1;">
+              <img class="ba-after" src="assets/app/1.%20lq-ref-sr/169_sr.jpg" alt="Restored poster" loading="lazy">
+              <div class="ba-before-wrap"><img class="ba-before" src="assets/app/1.%20lq-ref-sr/169_lq.jpg" alt="Smartphone 100x telephoto shot of the poster" loading="lazy"></div>
+              <span class="ba-badge left">Phone 100× Telephoto</span>
+              <span class="ba-badge right">WorldSR</span>
+              <div class="ba-handle"><div class="ba-grip"><svg viewBox="0 0 24 24"><polyline points="9 6 4 12 9 18"/><polyline points="15 6 20 12 15 18"/></svg></div></div>
+            </div>
+            <div class="tile">
+              <div class="img-box"><img src="assets/app/1.%20lq-ref-sr/169_ref.jpg" alt="DSLR high-resolution photo of the poster" data-lightbox loading="lazy"></div>
+              <div class="tile-label">DSLR Photo</div>
+            </div>
+          </div>
+        </div>
+        <div class="app-slide">
+          <div class="ba-row">
+            <div class="ba-slider" style="--pos: 50%; aspect-ratio: 1536 / 2032;">
+              <img class="ba-after" src="assets/app/1.%20lq-ref-sr/321_sr.jpg" alt="Restored poster" loading="lazy">
+              <div class="ba-before-wrap"><img class="ba-before" src="assets/app/1.%20lq-ref-sr/321_lq.jpg" alt="Smartphone telephoto shot of the poster" loading="lazy"></div>
+              <span class="ba-badge left">Phone Telephoto</span>
+              <span class="ba-badge right">WorldSR</span>
+              <div class="ba-handle"><div class="ba-grip"><svg viewBox="0 0 24 24"><polyline points="9 6 4 12 9 18"/><polyline points="15 6 20 12 15 18"/></svg></div></div>
+            </div>
+            <div class="tile">
+              <div class="img-box"><img src="assets/app/1.%20lq-ref-sr/321_ref.jpg" alt="High-resolution reference photo of the poster" data-lightbox loading="lazy"></div>
+              <div class="tile-label">Reference</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="app-nav">
+        <button class="car-btn prev" type="button" aria-label="Previous example"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <p class="car-counter">Example <b>1</b> / 2</p>
+        <button class="car-btn next" type="button" aria-label="Next example"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+    </div>
+
+    <!-- ID Photo -->
+    <div class="tab-panel app-card" id="app-idphoto">
+      <h4>ID Photo Enhancement</h4>
+      <p class="desc">WorldSR fixes the identity-fidelity (ID) issue of Nano Banana-generated ID photos, restoring the person's true identity with a web-retrieved reference of the same person. <i>Drag the slider to compare.</i></p>
+      <div class="app-carousel">
+        <div class="app-slide active">
+          <div class="ba-row">
+            <div class="ba-slider" style="--pos: 50%; aspect-ratio: 1 / 1;">
+              <img class="ba-after" src="assets/app/2.%20idphoto/lyf_sr.jpg" alt="Enhanced ID photo" loading="lazy">
+              <div class="ba-before-wrap"><img class="ba-before" src="assets/app/2.%20idphoto/lyf_gt.jpg" alt="Nano Banana generated ID photo" loading="lazy"></div>
+              <span class="ba-badge left">Nano Banana</span>
+              <span class="ba-badge right">WorldSR</span>
+              <div class="ba-handle"><div class="ba-grip"><svg viewBox="0 0 24 24"><polyline points="9 6 4 12 9 18"/><polyline points="15 6 20 12 15 18"/></svg></div></div>
+            </div>
+            <div class="tile">
+              <div class="img-box"><img src="assets/app/2.%20idphoto/lyf_ref.jpg" alt="Retrieved reference of the person" data-lightbox loading="lazy"></div>
+              <div class="tile-label">Reference</div>
+            </div>
+          </div>
+        </div>
+        <div class="app-slide">
+          <div class="ba-row">
+            <div class="ba-slider" style="--pos: 50%; aspect-ratio: 1 / 1;">
+              <img class="ba-after" src="assets/app/2.%20idphoto/wxl_sr.jpg" alt="Enhanced ID photo" loading="lazy">
+              <div class="ba-before-wrap"><img class="ba-before" src="assets/app/2.%20idphoto/wxl_gt.jpg" alt="Nano Banana generated ID photo" loading="lazy"></div>
+              <span class="ba-badge left">Nano Banana</span>
+              <span class="ba-badge right">WorldSR</span>
+              <div class="ba-handle"><div class="ba-grip"><svg viewBox="0 0 24 24"><polyline points="9 6 4 12 9 18"/><polyline points="15 6 20 12 15 18"/></svg></div></div>
+            </div>
+            <div class="tile">
+              <div class="img-box"><img src="assets/app/2.%20idphoto/wxl_ref.jpg" alt="Retrieved reference of the person" data-lightbox loading="lazy"></div>
+              <div class="tile-label">Reference</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="app-nav">
+        <button class="car-btn prev" type="button" aria-label="Previous example"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <p class="car-counter">Example <b>1</b> / 2</p>
+        <button class="car-btn next" type="button" aria-label="Next example"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+    </div>
+
+    <!-- AIGC Repair -->
+    <div class="tab-panel app-card" id="app-aigc">
+      <h4>AIGC Repair</h4>
+      <p class="desc">A degraded AI-generated artwork is repaired and re-rendered at a higher resolution, using its clear original as the reference. <i>Drag the slider to compare.</i></p>
+      <div class="app-carousel">
+        <div class="app-slide active">
+          <div class="ba-row">
+            <div class="ba-slider" style="--pos: 50%; aspect-ratio: 1024 / 1360;">
+              <img class="ba-after" src="assets/app/3.%20gen_repair/o14_sr.jpg" alt="Repaired high-resolution artwork" loading="lazy">
+              <div class="ba-before-wrap"><img class="ba-before" src="assets/app/3.%20gen_repair/o14.jpg" alt="AIGC generated image" loading="lazy"></div>
+              <span class="ba-badge left">AIGC Gen</span>
+              <span class="ba-badge right">WorldSR</span>
+              <div class="ba-handle"><div class="ba-grip"><svg viewBox="0 0 24 24"><polyline points="9 6 4 12 9 18"/><polyline points="15 6 20 12 15 18"/></svg></div></div>
+            </div>
+            <div class="tile">
+              <div class="img-box"><img src="assets/app/3.%20gen_repair/i14.jpg" alt="Original artwork as reference" data-lightbox loading="lazy"></div>
+              <div class="tile-label">Reference</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3DGS Refine -->
+    <div class="tab-panel app-card" id="app-3dgs">
+      <h4>3D Gaussian Splatting Refinement</h4>
+      <p class="desc">Blurry, floaty 3DGS renders are cleaned up and sharpened with a sharp reference frame. <i>Drag the slider to compare.</i></p>
+      <div class="app-carousel">
+        <div class="app-slide active">
+          <div class="ba-row">
+            <div class="ba-slider" style="--pos: 50%; aspect-ratio: 1808 / 1024;">
+              <img class="ba-after" src="assets/app/4.%203dgs_fix/sr.jpg" alt="Refined render" loading="lazy">
+              <div class="ba-before-wrap"><img class="ba-before" src="assets/app/4.%203dgs_fix/example_input.jpg" alt="Blurry 3DGS render" loading="lazy"></div>
+              <span class="ba-badge left">3DGS Render</span>
+              <span class="ba-badge right">WorldSR</span>
+              <div class="ba-handle"><div class="ba-grip"><svg viewBox="0 0 24 24"><polyline points="9 6 4 12 9 18"/><polyline points="15 6 20 12 15 18"/></svg></div></div>
+            </div>
+            <div class="tile">
+              <div class="img-box"><img src="assets/app/4.%203dgs_fix/example_ref.jpg" alt="Sharp reference frame" data-lightbox loading="lazy"></div>
+              <div class="tile-label">Reference</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VideoSR -->
+    <div class="tab-panel app-card" id="app-videosr">
+      <h4>Video Super-Resolution</h4>
+      <p class="desc">WorldSR extends from images to videos: a degraded video is enhanced with entity-level world knowledge, recovering sharp, faithful details in every frame. <i>Play the two videos to compare the input (left) with the WorldSR result (right) — they stay in sync.</i></p>
+      <div class="app-carousel">
+        <div class="app-slide active">
+          <div class="ba-row">
+            <div class="tile">
+              <div class="img-box video-box"><video src="assets/app/5.%20VideoSR/000_5s_24fps.mp4" poster="assets/app/5.%20VideoSR/000_sr.jpg" controls muted loop playsinline preload="metadata"></video></div>
+              <div class="tile-label">Input</div>
+            </div>
+            <div class="tile">
+              <div class="img-box video-box"><video src="assets/app/5.%20VideoSR/000_5s_24fps_aug.mp4" poster="assets/app/5.%20VideoSR/000_sr.jpg" controls muted loop playsinline preload="metadata"></video></div>
+              <div class="tile-label">WorldSR</div>
+            </div>
+          </div>
+        </div>
+        <div class="app-slide">
+          <div class="ba-row">
+            <div class="tile">
+              <div class="img-box video-box"><video src="assets/app/5.%20VideoSR/001_5s_24fps.mp4" poster="assets/app/5.%20VideoSR/001_sr.jpg" controls muted loop playsinline preload="metadata"></video></div>
+              <div class="tile-label">Input</div>
+            </div>
+            <div class="tile">
+              <div class="img-box video-box"><video src="assets/app/5.%20VideoSR/001_5s_24fps_aug.mp4" poster="assets/app/5.%20VideoSR/001_sr.jpg" controls muted loop playsinline preload="metadata"></video></div>
+              <div class="tile-label">WorldSR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="app-nav">
+        <button class="car-btn prev" type="button" aria-label="Previous example"><svg viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg></button>
+        <p class="car-counter">Example <b>1</b> / 2</p>
+        <button class="car-btn next" type="button" aria-label="Next example"><svg viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= BibTeX ============================= -->
+<section id="bibtex">
+  <div class="container">
+    <h2 class="section-title">Citation</h2>
+    <div class="bibtex-box">
+      <button class="copy-btn" id="copy-bibtex" type="button">Copy</button>
+      <pre id="bibtex-code">@inproceedings{deng2026worldsr,
+  title     = {WorldSR: Harnessing World Knowledge Search for Grounded Image Super-Resolution},
+  author    = {Deng, Junyuan and Wu, Xinyi and Wu, Zhenyao and Wang, Song and Wang, Yu and Zhu, Congchao},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= Footer ============================= -->
+<footer>
+  <div class="container">
+    <p>
+      📮 Contact: <a href="mailto:dengjy27@mail2.sysu.edu.cn">dengjy27@mail2.sysu.edu.cn</a>
+    </p>
+    <p>
+      Template inspired by <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+    </p>
+  </div>
+</footer>
+
+<!-- Lightbox overlay -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lb-controls">
+    <button id="lb-zoom-in" type="button" aria-label="Zoom in"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+    <button id="lb-zoom-out" type="button" aria-label="Zoom out"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+    <button id="lb-reset" type="button" aria-label="Reset view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg></button>
+    <button id="lb-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+  </div>
+  <img id="lightbox-img" src="" alt="Enlarged figure">
+  <div class="lb-hint">Scroll to zoom · Drag to pan · Double-click to reset · Esc to close</div>
+</div>
+
+  <script src="assets/js/main.js"></script>
+
+</body>
+</html>
