@@ -12,6 +12,10 @@
 
 <p align="center"><sup>✉</sup> Corresponding author &nbsp;·&nbsp; <strong>NeurIPS 2026</strong></p>
 
+<p align="center">
+  <img src="assets/img/teaser.jpg" alt="WorldSR teaser: real-world entity knowledge search and world-grounded super-resolution" width="100%">
+</p>
+
 ---
 
 ## 🔗 Links
