@@ -10,11 +10,11 @@
   <a href="#"><img src="https://img.shields.io/badge/%F0%9F%A4%97_-Datasets-yellow" alt="Datasets"></a>
 </p>
 
-<p align="center"><strong><a href="https://scholar.google.com/citations?user=SsG0abgAAAAJ&hl=en">Junyuan Deng</a><sup>1</sup>, <a href="https://scholar.google.com/citations?user=7JvBwK0AAAAJ&hl=en">Xinyi Wu</a><sup>1</sup>, <a href="https://scholar.google.com/citations?user=FrRQragAAAAJ&hl=en">Zhenyao Wu</a><sup>1,✉</sup>, <a href="https://scholar.google.com/citations?user=eycXl_QAAAAJ&hl=en">Song Wang</a><sup>1,2</sup>, Yu Wang<sup>1</sup>, Congchao Zhu<sup>1</sup></strong></p>
+<p align="center"><strong><a href="https://scholar.google.com/citations?user=SsG0abgAAAAJ&hl=en">Junyuan Deng</a><sup>1</sup>, <a href="https://scholar.google.com/citations?user=7JvBwK0AAAAJ&hl=en">Xinyi Wu</a><sup>1</sup>, <a href="https://scholar.google.com/citations?user=FrRQragAAAAJ&hl=en">Zhenyao Wu</a><sup>1,✉</sup>, <a href="https://scholar.google.com/citations?user=eycXl_QAAAAJ&hl=en">Song Wang</a><sup>1,2,✉</sup>, Yu Wang<sup>1</sup>, Congchao Zhu<sup>1</sup></strong></p>
 
 <p align="center"><sup>1</sup> <a href="https://www.honor.com/global/">Honor Device Co., Ltd</a> &nbsp;·&nbsp; <sup>2</sup> Shenzhen University of Advanced Technology</p>
 
-<p align="center"><sup>✉</sup> Corresponding author &nbsp;·&nbsp; <strong>NeurIPS 2026</strong></p>
+<p align="center"><sup>✉</sup> Corresponding authors &nbsp;·&nbsp; <strong>NeurIPS 2026</strong></p>
 
 <p align="center">
   <img src="assets/img/teaser.jpg" alt="WorldSR teaser: real-world entity knowledge search and world-grounded super-resolution" width="100%">
